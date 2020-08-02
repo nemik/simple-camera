@@ -94,7 +94,10 @@ class _GalleryPageState extends State<GalleryPage> {
 
                             try {
                               current_file.deleteSync();
-                            } finally {
+                            } catch(i) {
+                              current_file = null;
+                            } 
+                            finally {
                               setState(() {});
                             }
                           },
