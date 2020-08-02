@@ -1,4 +1,4 @@
-package com.example.kid_camera
+package net.nemik.simple_camera
 
 import io.flutter.embedding.android.FlutterActivity
 

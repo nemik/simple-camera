@@ -10,8 +10,8 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kid_camera/gallery.dart';
-import 'package:kid_camera/shutter.dart';
+import 'package:simple_camera/gallery.dart';
+import 'package:simple_camera/shutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -46,7 +46,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = false;
-  bool shutter_done = true;
+  bool shutterDone = true;
   CameraDescription currentCam;
 
   @override
@@ -90,9 +90,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   Widget build(BuildContext context) {
-    Widget cam_preview = _cameraPreviewWidget();
-    if (!shutter_done) {
-      cam_preview = InkWell(
+    Widget camPreview = _cameraPreviewWidget();
+    if (!shutterDone) {
+      camPreview = InkWell(
         splashColor: Colors.black,
         highlightColor: Colors.white,
       );
@@ -106,7 +106,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       ),
       */
       body: Stack(alignment: FractionalOffset.center, children: <Widget>[
-        cam_preview,
+        camPreview,
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
@@ -179,61 +179,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     }
   }
 
-  /// Toggle recording audio
-  Widget _toggleAudioWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 25),
-      child: Row(
-        children: <Widget>[
-          const Text('Enable Audio:'),
-          Switch(
-            value: enableAudio,
-            onChanged: (bool value) {
-              enableAudio = value;
-              if (controller != null) {
-                onNewCameraSelected(controller.description);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Display the thumbnail of the captured image or video.
-  Widget _thumbnailWidget() {
-    return Expanded(
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            videoController == null && imagePath == null
-                ? Container()
-                : SizedBox(
-                    child: (videoController == null)
-                        ? Image.file(File(imagePath))
-                        : Container(
-                            child: Center(
-                              child: AspectRatio(
-                                  aspectRatio:
-                                      videoController.value.size != null
-                                          ? videoController.value.aspectRatio
-                                          : 1.0,
-                                  child: VideoPlayer(videoController)),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.pink)),
-                          ),
-                    width: 64.0,
-                    height: 64.0,
-                  ),
-          ],
-        ),
-      ),
-    );
-  }
-
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
     return Row(
@@ -252,7 +197,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                       !controller.value.isRecordingVideo) {
                     onTakePictureButtonPressed();
                     setState(() {
-                      shutter_done = false;
+                      shutterDone = false;
                     });
                   }
                 },
@@ -276,9 +221,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   List<Widget> _cameraTogglesRowWidget() {
     final List<Widget> toggles = <Widget>[];
-
-    bool have_landscape = false;
-    bool have_portrait = false;
 
     if (cameras.isEmpty) {
       return [const Text('No camera found')];
@@ -385,7 +327,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           //showInSnackBar('Picture saved to $filePath');
         }
         setState(() {
-          shutter_done = true;
+          shutterDone = true;
         });
       }
     });

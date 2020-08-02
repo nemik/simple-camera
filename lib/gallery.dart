@@ -2,8 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:kid_camera/shutter.dart';
+import 'package:simple_camera/shutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -15,7 +14,7 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  FileSystemEntity current_file;
+  FileSystemEntity currentFile;
 
   Future<List<FileSystemEntity>> getFiles() async {
     final Directory extDir = await getExternalStorageDirectory();
@@ -31,19 +30,19 @@ class _GalleryPageState extends State<GalleryPage> {
         builder: (context, photos) {
           if (photos.hasError) print(photos.error);
 
-          if (current_file != null &&
-              !current_file.existsSync() &&
+          if (currentFile != null &&
+              !currentFile.existsSync() &&
               photos.hasData &&
               photos.data.length > 0) {
-            current_file = photos.data.reversed.toList()[0];
-            print("init not found ${current_file}");
+            currentFile = photos.data.reversed.toList()[0];
+            print("init not found $currentFile");
           }
 
-          if (current_file == null &&
+          if (currentFile == null &&
               photos.hasData &&
               photos.data.length > 0) {
-            current_file = photos.data.reversed.toList()[0];
-            print("init null ${current_file}");
+            currentFile = photos.data.reversed.toList()[0];
+            print("init null $currentFile");
           }
 
           return photos.hasData && photos.data.length > 0
@@ -53,9 +52,9 @@ class _GalleryPageState extends State<GalleryPage> {
                       enableRotation: true,
                       onPageChanged: (index) {
                         setState(() {
-                          current_file = photos.data.reversed.toList()[index];
+                          currentFile = photos.data.reversed.toList()[index];
                         });
-                        print("onpagechanged ${current_file}");
+                        print("onpagechanged $currentFile");
                       },
                       itemCount: photos.data.length,
                       builder: (context, index) {
@@ -85,9 +84,9 @@ class _GalleryPageState extends State<GalleryPage> {
                           iconData: Icons.delete,
                           color: Colors.red,
                           onTap: () {
-                            print("DELETING ${current_file}");
+                            print("DELETING $currentFile");
                             try {
-                              current_file.deleteSync();
+                              currentFile.deleteSync();
                             } finally {
                               setState(() {});
                             }
@@ -102,7 +101,7 @@ class _GalleryPageState extends State<GalleryPage> {
                           iconData: Icons.share,
                           color: Colors.orange,
                           onTap: () {
-                            File img = File(current_file.path);
+                            File img = File(currentFile.path);
                             Uint8List bytes = img.readAsBytesSync();
                             WcFlutterShare.share(
                                     sharePopupTitle: 'share',
