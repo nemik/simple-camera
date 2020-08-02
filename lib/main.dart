@@ -47,6 +47,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VoidCallback videoPlayerListener;
   bool enableAudio = false;
   bool shutter_done = true;
+  CameraDescription currentCam;
 
   @override
   void initState() {
@@ -122,6 +123,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               iconData: Icons.photo_library,
               color: Colors.purpleAccent,
               iconColor: Colors.black,
+              size: 50,
               onTap: () {
                 Navigator.push(
                   context,
@@ -242,6 +244,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             padding: EdgeInsets.all(36.0),
             child: CircleButton(
                 iconData: Icons.camera,
+                size: 80,
+                iconSize: 50,
                 onTap: () {
                   if (controller != null &&
                       controller.value.isInitialized &&
@@ -308,10 +312,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               iconData: getCameraLensIcon(cameraDescription.lensDirection),
               color: Colors.green,
               iconColor: Colors.black,
+              size: 40,
               onTap: () {
                 //showInSnackBar('Camera: ${controller}');
                 if (controller == null || !controller.value.isRecordingVideo) {
                   onNewCameraSelected(cameraDescription);
+                  setState(() {
+                    currentCam = cameraDescription;
+                  });
                   //showInSnackBar('Camera desc ${cameraDescription}');
                 }
               }),
@@ -319,6 +327,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
         if (controller == null) {
           onNewCameraSelected(cameraDescription);
+          setState(() {
+            currentCam = cameraDescription;
+          });
           //showInSnackBar('Camera desc ${cameraDescription}');
         }
       }

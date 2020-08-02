@@ -23,9 +23,11 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      /*
       appBar: AppBar(
         title: Text('Gallery'),
       ),
+      */
       // Implemented with a PageView, simpler than setting it up yourself
       // You can either specify images directly or by using a builder as in this tutorial
       body: new FutureBuilder<List>(
@@ -33,22 +35,27 @@ class _GalleryPageState extends State<GalleryPage> {
         builder: (context, photos) {
           if (photos.hasError) print(photos.error);
 
-          return photos.hasData
+          if (current_file == null && photos.hasData && photos.data.length > 0) {
+            current_file = photos.data.reversed.toList()[0];
+            print("init ${current_file}");
+          }
+
+          return photos.hasData && photos.data.length > 0
               ? new Stack(children: [
                   new PhotoViewGallery.builder(
                       scrollDirection: Axis.vertical,
                       enableRotation: true,
                       onPageChanged: (index) {
                         setState(() {
-                          current_file = photos.data[index];
+                          current_file = photos.data.reversed.toList()[index];
                         });
-                      
+                        print("onpagechanged ${current_file}");
                       },
                       itemCount: photos.data.length,
                       builder: (context, index) {
                         return PhotoViewGalleryPageOptions(
                           imageProvider: FileImage(
-                            photos.data[index],
+                            photos.data.reversed.toList()[index],
                           ),
                           // Contained = the smallest possible size to fit one dimension of the screen
                           minScale: PhotoViewComputedScale.contained * 0.8,
@@ -78,13 +85,29 @@ class _GalleryPageState extends State<GalleryPage> {
                             // Find the Scaffold in the widget tree and use it to show a SnackBar.
                             Scaffold.of(context).showSnackBar(snackBar);
                             */
-                            current_file.deleteSync();
-                            setState(() {
-                              
-                            });
+                            print("DELETING ${current_file}");
+
+                            try {
+                              current_file.deleteSync();
+                            } finally {
+                              setState(() {});
+                            }
                           },
                         ),
-                      ))
+                      )),
+                  new Align(
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: new CircleButton(
+                            iconData: Icons.add_a_photo,
+                            iconColor: Colors.black,
+                            color: Colors.blue[300],
+                            size: 80,
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          )))
                 ])
               /*
               new GridView.builder(
@@ -97,7 +120,26 @@ class _GalleryPageState extends State<GalleryPage> {
                     return Image.file(photos.data[index]);
                   })
                   */
-              : new Center(child: new CircularProgressIndicator());
+              : new Center(
+                  child: new Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      //new CircularProgressIndicator(),
+                      new Text(
+                        "No Pictures",
+                        style: TextStyle(fontSize: 34.0),
+                      ),
+                      new SizedBox(height: 100),
+                      new CircleButton(
+                        iconData: Icons.add_a_photo,
+                        iconColor: Colors.black,
+                        color: Colors.blue[300],
+                        size: 80,
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                    ]));
         },
       ),
 
