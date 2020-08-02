@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kid_camera/shutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 class GalleryPage extends StatefulWidget {
   @override
@@ -35,7 +38,9 @@ class _GalleryPageState extends State<GalleryPage> {
         builder: (context, photos) {
           if (photos.hasError) print(photos.error);
 
-          if (current_file == null && photos.hasData && photos.data.length > 0) {
+          if (current_file == null &&
+              photos.hasData &&
+              photos.data.length > 0) {
             current_file = photos.data.reversed.toList()[0];
             print("init ${current_file}");
           }
@@ -92,6 +97,25 @@ class _GalleryPageState extends State<GalleryPage> {
                             } finally {
                               setState(() {});
                             }
+                          },
+                        ),
+                      )),
+                  new Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: CircleButton(
+                          iconData: Icons.share,
+                          color: Colors.orange,
+                          onTap: () {
+                            File img = File(current_file.path);
+                            Uint8List bytes = img.readAsBytesSync();
+                            WcFlutterShare.share(
+                                        sharePopupTitle: 'share',
+                                        fileName: 'share.png',
+                                        mimeType: 'image/png',
+                                        bytesOfFile: bytes)
+                                    .then((value) => null);
                           },
                         ),
                       )),

@@ -544,6 +544,7 @@ class CameraApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: CameraExampleHome(),
+      debugShowCheckedModeBanner: false
     );
   }
 }
